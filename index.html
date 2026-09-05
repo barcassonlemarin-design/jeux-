@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Games Menu</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-color: #ffffff;
+            --accent-color: #38bdf8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #0f172a;
+        }
+
+        .app-container {
+            width: 900px;
+            height: 700px;
+            background-color: var(--panel-bg);
+            border: 2px solid #334155;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+            transform: scale(0.8);
+            transform-origin: center center;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .sys-info {
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+
+        .welcome-section {
+            padding: 15px 20px;
+            background: rgba(56, 189, 248, 0.05);
+            border-bottom: 1px solid #334155;
+            text-align: center;
+        }
+
+        .welcome-section h2 {
+            margin: 0 0 5px 0;
+            color: var(--accent-color);
+            font-size: 18px;
+        }
+
+        .welcome-section p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 0;
+        }
+
+        .tab-bar {
+            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #334155;
+            background-color: rgba(0,0,0,0.2);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 8px 15px;
+            background-color: #334155;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tab-btn:hover {
+            background-color: #475569;
+        }
+
+        .tab-btn.quit {
+            background-color: #ef4444;
+            margin-left: auto;
+        }
+
+        .games-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .game-row {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255,255,255,0.03);
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+            gap: 12px;
+        }
+
+        .game-type-badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: #334155;
+            color: var(--accent-color);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 75px;
+            text-align: center;
+        }
+
+        .game-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .game-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: gray;
+        }
+
+        .star-btn.active {
+            color: gold;
+        }
+
+        .instructions-footer {
+            padding: 12px 20px;
+            background: #0f172a;
+            border-top: 1px solid #334155;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .instructions-footer strong {
+            color: var(--accent-color);
+        }
+
+        .modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px;
+            background-color: #1e293b;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            z-index: 20000;
+            display: none;
+        }
+
+        .modal-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .close-x-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .close-x-btn:hover {
+            color: #ef4444;
+        }
+
+        .modal label {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .modal select, .modal input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            background: #334155;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .media-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .media-tab-btn {
+            flex: 1;
+            padding: 6px;
+            background: #334155;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .media-tab-btn.active {
+            background: var(--accent-color);
+            color: #0f172a;
+        }
+
+        #game-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-overlay-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .game-hud-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid #475569;
+            padding: 10px 25px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .game-hud-title {
+            font-weight: bold;
+            font-size: 15px;
+            color: var(--accent-color);
+        }
+
+        .game-hud-btn {
+            background-color: #475569;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .stop-game-btn {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        #game-frame-container {
+            position: relative;
+            z-index: 5;
+            width: 80vw;
+            height: 75vh;
+            max-width: 1024px;
+            max-height: 768px;
+            background: #0f172a;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #active-game-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+            display: none;
+        }
+
+        #mp3-player-ui {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: white;
+            gap: 20px;
+        }
+
+        .music-note-icon {
+            font-size: 80px;
+            animation: bounceNote 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes bounceNote {
+            0% { transform: translateY(0); text-shadow: 0 5px 15px rgba(56,189,248,0.4); }
+            100% { transform: translateY(-15px); text-shadow: 0 15px 25px rgba(56,189,248,0.8); }
+        }
+
+        .progress-bar-container {
+            width: 70%;
+            background: #334155;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            font-size: 14px;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        #mp4-player-ui {
+            display: none;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #overlay-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop></audio>
+    <audio id="action-audio"></audio>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="app-container" id="main-app">
+        <header>
+            <h1 id="welcome-title">🎮 RETRO MENU</h1>
+            <div class="sys-info" id="sys-info">MODE : CREATED</div>
+        </header>
+
+        <div class="welcome-section">
+            <h2 id="welcome-sub">Welcome to your Retro Launcher</h2>
+            <p id="welcome-desc">This system automatically loads games indexed from your local resources.</p>
+        </div>
+
+        <div class="tab-bar">
+            <button class="tab-btn" onclick="openModal('favorites-modal')" id="btn-fav">⭐ Favorites</button>
+            <button class="tab-btn" onclick="openModal('music-modal')" id="btn-music-menu">🎵 Media</button>
+            <button class="tab-btn" onclick="openModal('settings-modal')" id="btn-set">⚙️ Settings</button>
+            <button class="tab-btn" onclick="openSearchModal()" id="btn-search">🔍 Search</button>
+            <button class="tab-btn" onclick="openModal('about-modal')" id="btn-about">ℹ️ About</button>
+            <button class="tab-btn quit" onclick="quitApp()" id="btn-quit">❌ QUIT</button>
+        </div>
+
+        <div class="games-container" id="games-container"></div>
+
+        <div class="instructions-footer" id="instructions-text"></div>
+    </div>
+
+    <div id="game-overlay">
+        <canvas id="game-overlay-canvas"></canvas>
+        <div class="game-hud-bar">
+            <span class="game-hud-title" id="overlay-game-title">Game running</span>
+            <button class="game-hud-btn" onclick="openModal('in-game-settings-modal')" id="btn-ingame-set">⚙️ Settings</button>
+            <button class="stop-game-btn" onclick="stopCurrentGame()" id="btn-stop-game">Stop Game</button>
+        </div>
+        <div id="game-frame-container">
+            <iframe id="active-game-iframe"></iframe>
+
+            <div id="mp3-player-ui">
+                <div class="music-note-icon">🎵</div>
+                <div id="mp3-track-name" style="font-weight: bold; font-size: 16px;">Track title</div>
+                <div class="progress-bar-container" id="mp3-progress-container" onclick="seekAudio(event)">
+                    <div class="progress-bar-fill" id="mp3-progress-fill"></div>
+                </div>
+                <div class="time-display" id="mp3-time-display">00:00 / 00:00</div>
+            </div>
+
+            <div id="mp4-player-ui">
+                <video id="overlay-video" controls></video>
+            </div>
+        </div>
+    </div>
+
+    <div id="music-modal" class="modal">
+        <div class="modal-header-row">
+            <h2 id="music-modal-title" style="margin: 0;">🎵 Media Management</h2>
+            <button class="close-x-btn" onclick="closeModal('music-modal')">✕</button>
+        </div>
+
+        <div class="media-tabs">
+            <button class="media-tab-btn active" id="tab-mp3" onclick="switchMediaTab('mp3')">MP3 Player</button>
+            <button class="media-tab-btn" id="tab-mp4" onclick="switchMediaTab('mp4')">MP4 Video</button>
+        </div>
+
+        <div id="section-mp3">
+            <label id="lbl-choose-action">Choose action:</label>
+            <select id="audio-mode-select" onchange="toggleAudioInputs(this.value)">
+                <option value="menu" id="opt-menu">Import sound for selection menu</option>
+                <option value="listen" id="opt-listen">Import sound to listen</option>
+            </select>
+
+            <div id="menu-audio-section">
+                <label id="lbl-import-menu">Import menu sound:</label>
+                <input type="file" id="menu-audio-file" accept="audio/*" style="width: 100%; margin-bottom: 15px; color: white;" onchange="loadMenuAudio(this)">
+            </div>
+
+            <div id="listen-audio-section" style="display: none;">
+                <label id="lbl-import-listen">Import sound to listen:</label>
+                <input type="file" id="listen-audio-file" accept="audio/*" style="width: 100%; margin-bottom: 15px; color: white;" onchange="launchMp3PlayerOverlay(this)">
+            </div>
+        </div>
+
+        <div id="section-mp4" style="display: none;">
+            <label id="lbl-import-mp4">Import an MP4 video:</label>
+            <input type="file" id="mp4-file" accept="video/mp4" style="width: 100%; margin-bottom: 15px; color: white;" onchange="launchMp4PlayerOverlay(this)">
+        </div>
+    </div>
+
+    <div id="search-modal" class="modal">
+        <div class="modal-header-row">
+            <h2 id="search-modal-title" style="margin: 0;">🔍 Web Search</h2>
+            <button class="close-x-btn" onclick="closeModal('search-modal')">✕</button>
+        </div>
+        <label id="search-label-input">Enter your search:</label>
+        <input type="text" id="search-input" placeholder="What are you looking for?" style="width: 100%; padding: 10px; background: #334155; color: white; border: none; border-radius: 4px; margin: 10px 0 15px 0; box-sizing: border-box;">
+        <button class="tab-btn" id="search-execute-btn" style="width: 100%; justify-content: center; background-color: var(--accent-color); color: #0f172a; font-weight: bold; margin-bottom: 10px;" onclick="executeSearch()">Search</button>
+    </div>
+
+    <div id="favorites-modal" class="modal">
+        <div class="modal-header-row">
+            <h2 id="fav-modal-title" style="margin: 0;">⭐ Favorites</h2>
+            <button class="close-x-btn" onclick="closeModal('favorites-modal')">✕</button>
+        </div>
+        <div id="favorites-list" style="max-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-header-row">
+            <h2 id="set-modal-title" style="margin: 0;">⚙️ Settings</h2>
+            <button class="close-x-btn" onclick="closeModal('settings-modal')">✕</button>
+        </div>
+        
+        <label id="lbl-bg-theme">Animated background theme:</label>
+        <select id="bg-theme-select" onchange="changeBackgroundTheme(this.value)">
+            <option value="espace" id="theme-espace">🌌 Space / Shooting Stars</option>
+            <option value="matrice" id="theme-matrice">🟩 Matrix Code (Green)</option>
+            <option value="pluie" id="theme-pluie">🌧️ Realistic Rain</option>
+            <option value="neige" id="theme-neige">❄️ Winter Snow</option>
+            <option value="retro" id="theme-retro">🕹️ Retro Neon Grid (Synthwave)</option>
+            <option value="particules" id="theme-particules">✨ Golden Particles</option>
+            <option value="vagues" id="theme-vagues">🌊 Fluid Waves</option>
+            <option value="cyberpunk" id="theme-cyberpunk">⚡ Cyberpunk (Glitch)</option>
+            <option value="feu" id="theme-feu">🔥 Flames / Embers</option>
+            <option value="ocean" id="theme-ocean">🫧 Underwater Bubbles</option>
+            <option value="zen" id="theme-zen">🍃 Autumn Leaves / Zen</option>
+            <option value="plasma" id="theme-plasma">🔮 Plasma / Nebula</option>
+        </select>
+
+        <label id="lbl-volume">Volume:</label>
+        <input type="range" id="volume-range" min="0" max="100" value="40" oninput="updateVolume(this.value)">
+        
+        <label id="lbl-brightness">Brightness:</label>
+        <input type="range" id="brightness-range" min="10" max="100" value="100" oninput="updateBrightness(this.value)">
+        
+        <label id="lbl-language">Change language:</label>
+        <select id="language-select" onchange="changeLanguage(this.value)"></select>
+    </div>
+
+    <div id="in-game-settings-modal" class="modal">
+        <div class="modal-header-row">
+            <h2 id="ingame-set-title" style="margin: 0;">⚙️ Settings</h2>
+            <button class="close-x-btn" onclick="closeModal('in-game-settings-modal')">✕</button>
+        </div>
+
+        <label id="lbl-ingame-bg-theme">Animated background theme:</label>
+        <select id="ingame-bg-theme-select" onchange="changeBackgroundTheme(this.value)">
+            <option value="espace" id="ingame-theme-espace">🌌 Space / Shooting Stars</option>
+            <option value="matrice" id="ingame-theme-matrice">🟩 Matrix Code (Green)</option>
+            <option value="pluie" id="ingame-theme-pluie">🌧️ Realistic Rain</option>
+            <option value="neige" id="ingame-theme-neige">❄️ Winter Snow</option>
+            <option value="retro" id="ingame-theme-retro">🕹️ Retro Neon Grid (Synthwave)</option>
+            <option value="particules" id="ingame-theme-particules">✨ Golden Particles</option>
+            <option value="vagues" id="ingame-theme-vagues">🌊 Fluid Waves</option>
+            <option value="cyberpunk" id="ingame-theme-cyberpunk">⚡ Cyberpunk (Glitch)</option>
+            <option value="feu" id="ingame-theme-feu">🔥 Flames / Embers</option>
+            <option value="ocean" id="ingame-theme-ocean">🫧 Underwater Bubbles</option>
+            <option value="zen" id="ingame-theme-zen">🍃 Autumn Leaves / Zen</option>
+            <option value="plasma" id="ingame-theme-plasma">🔮 Plasma / Nebula</option>
+        </select>
+
+        <label id="lbl-ingame-volume">Volume:</label>
+        <input type="range" id="ingame-volume-range" min="0" max="100" value="40" oninput="updateVolume(this.value)">
+        
+        <label id="lbl-ingame-brightness">Brightness:</label>
+        <input type="range" id="ingame-brightness-range" min="10" max="100" value="100" oninput="updateBrightness(this.value)">
+        
+        <label id="lbl-ingame-language">Change language:</label>
+        <select id="ingame-language-select" onchange="changeLanguage(this.value)"></select>
+    </div>
+
+    <div id="about-modal" class="modal">
+        <div class="modal-header-row">
+            <h2 id="about-modal-title" style="margin: 0;">ℹ️ About</h2>
+            <button class="close-x-btn" onclick="closeModal('about-modal')">✕</button>
+        </div>
+        <p id="creator-text" style="text-align: center;">Creator: Badre Amraoui<br>Version: v1.1.6</p>
+    </div>
+
+    <script>
+        const TRANSLATIONS = {
+            "English": {
+                "lang_display": "English", "welcome": "🎮 RETRO MENU", "fav": "⭐ Favorites", "music_btn": "🎵 Media", "set": "⚙️ Settings",
+                "about": "ℹ️ About", "quit": "❌ QUIT", "close": "Close", "search": "🔍 Search",
+                "welcome_sub": "Welcome to your Retro Launcher",
+                "welcome_desc": "This system automatically loads games indexed from your local resources.",
+                "music_title": "🎵 Media Management", "choose_action": "Choose action:",
+                "opt_menu": "Import sound for selection menu", "opt_listen": "Import sound to listen",
+                "import_menu": "Import menu sound:", "import_listen": "Import sound to listen:", "import_mp4": "Import an MP4 video:",
+                "search_title": "🔍 Web Search", "search_label": "Enter your search:", "search_placeholder": "What are you looking for?", "search_btn": "Search",
+                "creator": "Creator: Badre Amraoui", "vol_label": "Volume:", "bright_label": "Brightness:",
+                "lang_label": "Change language:", "confirm_quit": "Are you sure you want to quit?",
+                "stop_btn": "Stop Media / Game", "ingame_set": "⚙️ Settings",
+                "app_closed_msg": "Application closed. You can close this tab.",
+                "theme_label": "Animated background theme:",
+                "instructions": "<strong>📋 Usage Instructions:</strong><br>• Place your game files in the local folder <code>./assets/games/</code>.<br>• Update the manifest list in <code>./assets/games.json</code> to display your titles.",
+                "t_espace": "🌌 Space / Shooting Stars", "t_matrice": "🟩 Matrix Code (Green)", "t_pluie": "🌧️ Realistic Rain",
+                "t_neige": "❄️ Winter Snow", "t_retro": "🕹️ Retro Neon Grid (Synthwave)", "t_particules": "✨ Golden Particles",
+                "t_vagues": "🌊 Fluid Waves", "t_cyberpunk": "⚡ Cyberpunk (Glitch)", "t_feu": "🔥 Flames / Embers",
+                "t_ocean": "🫧 Underwater Bubbles", "t_zen": "🍃 Autumn Leaves / Zen", "t_plasma": "🔮 Plasma / Nebula"
+            },
+            "Français": {
+                "lang_display": "Français", "welcome": "🎮 MENU RÉTRO", "fav": "⭐ Favoris", "music_btn": "🎵 Médias", "set": "⚙️ Paramètres",
+                "about": "ℹ️ À propos", "quit": "❌ QUITTER", "close": "Fermer", "search": "🔍 Recherche",
+                "welcome_sub": "Bienvenue sur votre Launcher Rétro",
+                "welcome_desc": "Ce système charge automatiquement les jeux indexés depuis vos ressources locales.",
+                "music_title": "🎵 Gestion des médias", "choose_action": "Choisir l'action :",
+                "opt_menu": "Importer un son pour le menu de sélection", "opt_listen": "Importer un son à écouter",
+                "import_menu": "Importer le son du menu :", "import_listen": "Importer le son à écouter :", "import_mp4": "Importer une vidéo MP4 :",
+                "search_title": "🔍 Recherche Web", "search_label": "Entrez votre recherche :", "search_placeholder": "Que cherchez-vous ?", "search_btn": "Rechercher",
+                "creator": "Créateur : Badre Amraoui", "vol_label": "Volume :", "bright_label": "Luminosité :",
+                "lang_label": "Changer la langue :", "confirm_quit": "Êtes-vous sûr de vouloir quitter ?",
+                "stop_btn": "Arrêter le média / jeu", "ingame_set": "⚙️ Paramètres",
+                "app_closed_msg": "Application fermée. Vous pouvez fermer cet onglet.",
+                "theme_label": "Thème du fond animé :",
+                "instructions": "<strong>📋 Instructions d'utilisation :</strong><br>• Placez vos fichiers de jeux dans le dossier local <code>./assets/games/</code>.<br>• Renseignez la liste dans le manifeste <code>./assets/games.json</code> pour afficher vos titres.",
+                "t_espace": "🌌 Espace / Étoiles filantes", "t_matrice": "🟩 Code Matrice (Vert)", "t_pluie": "🌧️ Pluie réaliste",
+                "t_neige": "❄️ Neige d'hiver", "t_retro": "🕹️ Grille Rétro Neon (Synthwave)", "t_particules": "✨ Particules dorées",
+                "t_vagues": "🌊 Vagues fluides", "t_cyberpunk": "⚡ Cyberpunk (Glitch)", "t_feu": "🔥 Flammes / Braises",
+                "t_ocean": "🫧 Bulles sous-marines", "t_zen": "🍃 Feuilles d'automne / Zen", "t_plasma": "🔮 Plasma / Nébuleuse"
+            },
+            "العربية": {
+                "lang_display": "العربية", "welcome": "🎮 قائمة ريترو", "fav": "⭐ المفضلة", "music_btn": "🎵 الوسائط", "set": "⚙️ الإعدادات",
+                "about": "ℹ️ حول", "quit": "❌ خروج", "close": "إغلاق", "search": "🔍 بحث",
+                "welcome_sub": "مرحبًا بك في مشغل ريترو الخاص بك",
+                "welcome_desc": "يقوم هذا النظام بتحميل الألعاب المفوهرسة من مواردك المحلية تلقائيًا.",
+                "music_title": "🎵 إدارة الوسائط", "choose_action": "اختر الإجراء:",
+                "opt_menu": "استيراد صوت لقائمة الاختيار", "opt_listen": "استيراد صوت للاستماع",
+                "import_menu": "استيراد صوت القائمة:", "import_listen": "استيراد صوت للاستماع:", "import_mp4": "استيراد فيديو MP4:",
+                "search_title": "🔍 بحث في الويب", "search_label": "أدخل بحثك:", "search_placeholder": "عما تبحث؟", "search_btn": "بحث",
+                "creator": "المبتكر: بدر العمراوي", "vol_label": "الصوت:", "bright_label": "السطوع:",
+                "lang_label": "تغيير اللغة:", "confirm_quit": "هل أنت متأكد أنك تريد الخروج؟",
+                "stop_btn": "إيقاف الوسائط / اللعبة", "ingame_set": "⚙️ الإعدادات",
+                "app_closed_msg": "تم إغلاق التطبيق. يمكنك إغلاق هذه العلامة.",
+                "theme_label": "موضوع الخلفية المتحركة:",
+                "instructions": "<strong>📋 تعليمات الاستخدام:</strong><br>• ضع ملفات ألعابك في المجلد المحلي <code>./assets/games/</code>.<br>• قم بتحديث قائمة البيان في <code>./assets/games.json</code> لعرض عناوينك.",
+                "t_espace": "🌌 الفضاء / الشهاب", "t_matrice": "🟩 كود مصفوفة (أخضر)", "t_pluie": "🌧️ مطر واقعي",
+                "t_neige": "❄️ ثلج الشتاء", "t_retro": "🕹️ شبكة نيون ريترو", "t_particules": "✨ جزيئات ذهبية",
+                "t_vagues": "🌊 موجات السوائل", "t_cyberpunk": "⚡ سايبربانك", "t_feu": "🔥 لهيب / جمر",
+                "t_ocean": "🫧 فقاعات تحت الماء", "t_zen": "🍃 أوراق الخريف / زين", "t_plasma": "🔮 بلازما / سديم"
+            },
+            "Español": {
+                "lang_display": "Español", "welcome": "🎮 MENÚ RETRO", "fav": "⭐ Favoritos", "music_btn": "🎵 Multimedia", "set": "⚙️ Ajustes",
+                "about": "ℹ️ Acerca de", "quit": "❌ SALIR", "close": "Cerrar", "search": "🔍 Buscar",
+                "welcome_sub": "Bienvenido a su Lanzador Retro",
+                "welcome_desc": "Este sistema carga automáticamente los juegos indexados desde sus recursos locales.",
+                "music_title": "🎵 Gestión de multimedia", "choose_action": "Elegir acción:",
+                "opt_menu": "Importar sonido para el menú de selección", "opt_listen": "Importar sonido para escuchar",
+                "import_menu": "Importar sonido del menú:", "import_listen": "Importar sonido para escuchar:", "import_mp4": "Importar vídeo MP4:",
+                "search_title": "🔍 Búsqueda web", "search_label": "Introduce tu búsqueda:", "search_placeholder": "¿Qué buscas?", "search_btn": "Buscar",
+                "creator": "Creador: Badre Amraoui", "vol_label": "Volumen:", "bright_label": "Brillo:",
+                "lang_label": "Cambiar idioma:", "confirm_quit": "¿Estás seguro de que quieres salir?",
+                "stop_btn": "Detener multimedia / juego", "ingame_set": "⚙️ Ajustes",
+                "app_closed_msg": "Aplicación cerrada. Puedes cerrar esta pestaña.",
+                "theme_label": "Tema de fondo animado:",
+                "instructions": "<strong>📋 Instrucciones de uso:</strong><br>• Coloque sus archivos de juego en la carpeta local <code>./assets/games/</code>.<br>• Actualice la lista de manifiesto en <code>./assets/games.json</code> para mostrar sus títulos.",
+                "t_espace": "🌌 Espacio / Estrellas fugaces", "t_matrice": "🟩 Código Matriz (Verde)", "t_pluie": "🌧️ Lluvia realista",
+                "t_neige": "❄️ Nieve de invierno", "t_retro": "🕹️ Rejilla Retro Neón", "t_particules": "✨ Partículas doradas",
+                "t_vagues": "🌊 Olas fluidas", "t_cyberpunk": "⚡ Cyberpunk", "t_feu": "🔥 Llamas / Brasas",
+                "t_ocean": "🫧 Burbujas submarinas", "t_zen": "🍃 Hojas de otoño / Zen", "t_plasma": "🔮 Plasma / Nebulosa"
+            },
+            "Deutsch": {
+                "lang_display": "Deutsch", "welcome": "🎮 RETRO MENÜ", "fav": "⭐ Favoriten", "music_btn": "🎵 Medien", "set": "⚙️ Einstellungen",
+                "about": "ℹ️ Über", "quit": "❌ BEENDEN", "close": "Schließen", "search": "🔍 Suchen",
+                "welcome_sub": "Willkommen bei Ihrem Retro Launcher",
+                "welcome_desc": "Dieses System lädt automatisch Spiele, die aus Ihren lokalen Ressourcen indiziert wurden.",
+                "music_title": "🎵 Medienverwaltung", "choose_action": "Aktion wählen:",
+                "opt_menu": "Ton für das Auswahlmenü importieren", "opt_listen": "Ton zum Anhören importieren",
+                "import_menu": "Menüton importieren:", "import_listen": "Ton zum Anhören importieren:", "import_mp4": "MP4-Video importieren:",
+                "search_title": "🔍 Websuche", "search_label": "Suchbegriff eingeben:", "search_placeholder": "Wonach suchst du?", "search_btn": "Suchen",
+                "creator": "Ersteller: Badre Amraoui", "vol_label": "Lautstärke:", "bright_label": "Helligkeit:",
+                "lang_label": "Sprache ändern:", "confirm_quit": "Möchten Sie wirklich beenden?",
+                "stop_btn": "Medien / Spiel stoppen", "ingame_set": "⚙️ Einstellungen",
+                "app_closed_msg": "Anwendung geschlossen. Sie können diesen Tab schließen.",
+                "theme_label": "Thema des animierten Hintergrunds:",
+                "instructions": "<strong>📋 Bedienungsanleitung:</strong><br>• Platzieren Sie Ihre Spieldateien im lokalen Ordner <code>./assets/games/</code>.<br>• Aktualisieren Sie die Manifestliste in <code>./assets/games.json</code>, um Ihre Titel anzuzeigen.",
+                "t_espace": "🌌 Weltraum / Sternschnuppen", "t_matrice": "🟩 Matrix-Code (Grün)", "t_pluie": "🌧️ Realistischer Regen",
+                "t_neige": "❄️ Winterschnee", "t_retro": "🕹️ Retro Neon-Gitter", "t_particules": "✨ Goldene Partikel",
+                "t_vagues": "🌊 Fluide Wellen", "t_cyberpunk": "⚡ Cyberpunk", "t_feu": "🔥 Flammen / Glut",
+                "t_ocean": "🫧 Unterwasserblasen", "t_zen": "🍃 Herbstblätter / Zen", "t_plasma": "🔮 Plasma / Nebel"
+            },
+            "Русский": {
+                "lang_display": "Русский", "welcome": "🎮 РЕТРО МЕНЮ", "fav": "⭐ Избранное", "music_btn": "🎵 Медиа", "set": "⚙️ Настройки",
+                "about": "ℹ️ О программе", "quit": "❌ ВЫХОД", "close": "Закрыть", "search": "🔍 Поиск",
+                "welcome_sub": "Добро пожаловать в ваш Ретро Лаунчер",
+                "welcome_desc": "Эта система автоматически загружает игры, проиндексированные из ваших локальных ресурсов.",
+                "music_title": "🎵 Управление медиа", "choose_action": "Выберите действие:",
+                "opt_menu": "Импорт звука для меню выбора", "opt_listen": "Импорт звука для прослушивания",
+                "import_menu": "Импорт звука меню:", "import_listen": "Импорт звука для прослушивания:", "import_mp4": "Импорт MP4 видео:",
+                "search_title": "🔍 Поиск в Веб", "search_label": "Введите поисковый запрос:", "search_placeholder": "Что вы ищете?", "search_btn": "Искать",
+                "creator": "Создатель: Бадре Амрауи", "vol_label": "Громкость:", "bright_label": "Яркость:",
+                "lang_label": "Изменить язык:", "confirm_quit": "Вы уверены, что хотите выйти?",
+                "stop_btn": "Остановить медиа / игру", "ingame_set": "⚙️ Настройки",
+                "app_closed_msg": "Приложение закрыто. Вы можете закрыть эту вкладку.",
+                "theme_label": "Тема анимированного фона:",
+                "instructions": "<strong>📋 Инструкции по использованию:</strong><br>• Поместите файлы игр в локальную папку <code>./assets/games/</code>.<br>• Обновите список манифеста в <code>./assets/games.json</code>, чтобы отобразить названия.",
+                "t_espace": "🌌 Космос / Падающие звезды", "t_matrice": "🟩 Матричный код (Зеленый)", "t_pluie": "🌧️ Реалистичный дождь",
+                "t_neige": "❄️ Зимний снег", "t_retro": "🕹️ Ретро неоновая сетка", "t_particules": "✨ Золотые частицы",
+                "t_vagues": "🌊 Жидкие волны", "t_cyberpunk": "⚡ Киберпанк", "t_feu": "🔥 Пламя / Угли",
+                "t_ocean": "🫧 Подводные пузыри", "t_zen": "🍃 Осенние листья / Дзен", "t_plasma": "🔮 Плазма / Туманность"
+            },
+            "中文": {
+                "lang_display": "中文", "welcome": "🎮 复古菜单", "fav": "⭐ 收藏夹", "music_btn": "🎵 媒体", "set": "⚙️ 设置",
+                "about": "ℹ️ 关于", "quit": "❌ 退出", "close": "关闭", "search": "🔍 搜索",
+                "welcome_sub": "欢迎使用您的复古启动器",
+                "welcome_desc": "该系统会自动从您的本地资源中加载索引的游戏。",
+                "music_title": "🎵 媒体管理", "choose_action": "选择操作：",
+                "opt_menu": "导入选择菜单的声音", "opt_listen": "导入要收听的声音",
+                "import_menu": "导入菜单声音：", "import_listen": "导入收听声音：", "import_mp4": "导入 MP4 视频：",
+                "search_title": "🔍 网页搜索", "search_label": "输入您的搜索：", "search_placeholder": "你在找什么？", "search_btn": "搜索",
+                "creator": "创作者：Badre Amraoui", "vol_label": "音量：", "bright_label": "亮度：",
+                "lang_label": "更改语言：", "confirm_quit": "您确定要退出吗？",
+                "stop_btn": "停止媒体 / 游戏", "ingame_set": "⚙️ 设置",
+                "app_closed_msg": "应用程序已关闭。您可以关闭此选项卡。",
+                "theme_label": "动态背景主题：",
+                "instructions": "<strong>📋 使用说明：</strong><br>• 将您的游戏文件放在本地文件夹 <code>./assets/games/</code> 中。<br>• 在 <code>./assets/games.json</code> 中更新清单列表以显示您的标题。",
+                "t_espace": "🌌 太空 / 流星", "t_matrice": "🟩 矩阵代码（绿色）", "t_pluie": "🌧️ 逼真雨滴",
+                "t_neige": "❄️ 冬季雪花", "t_retro": "🕹️ 复古霓虹网格", "t_particules": "✨ 金色粒子",
+                "t_vagues": "🌊 流体波浪", "t_cyberpunk": "⚡ 赛博朋克", "t_feu": "🔥 火焰 / 灰烬",
+                "t_ocean": "🫧 水底气泡", "t_zen": "🍃 秋叶 / 禅宗", "t_plasma": "🔮 等离子体 / 星云"
+            }
+        };
+
+        let config = {
+            lang: JSON.parse(localStorage.getItem("retro_config_v6"))?.lang || "English",
+            favorites: JSON.parse(localStorage.getItem("retro_favorites_v6")) || [],
+            volume: JSON.parse(localStorage.getItem("retro_config_v6"))?.volume ?? 40,
+            brightness: JSON.parse(localStorage.getItem("retro_config_v6"))?.brightness ?? 100,
+            bgTheme: JSON.parse(localStorage.getItem("retro_config_v6"))?.bgTheme || "espace",
+            menuAudioLocked: localStorage.getItem("retro_menu_audio_locked") || ""
+        };
+
+        const bgMusic = document.getElementById("bg-music");
+        const actionAudio = document.getElementById("action-audio");
+
+        if (config.menuAudioLocked) {
+            bgMusic.src = config.menuAudioLocked;
+            bgMusic.loop = true;
+        }
+
+        window.addEventListener('click', () => {
+            if (bgMusic.paused && actionAudio.paused && bgMusic.src) {
+                bgMusic.volume = config.volume / 100;
+                bgMusic.play().catch(e => console.log("Audio playback:", e));
+            }
+        }, { once: true });
+
+        const canvas = document.getElementById("bg-canvas");
+        const ctx = canvas.getContext("2d");
+        const overlayCanvas = document.getElementById("game-overlay-canvas");
+        const overlayCtx = overlayCanvas.getContext("2d");
+        let particles = [];
+        let matrixDrops = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            overlayCanvas.width = window.innerWidth; overlayCanvas.height = window.innerHeight;
+            initThemeElements();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function initThemeElements() {
+            particles = [];
+            matrixDrops = [];
+            let count = config.bgTheme === 'neige' || config.bgTheme === 'pluie' ? 120 : 60;
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    radius: Math.random() * 2.5 + 1,
+                    speedX: (Math.random() - 0.5) * 0.4,
+                    speedY: config.bgTheme === 'pluie' ? Math.random() * 8 + 4 : config.bgTheme === 'neige' ? Math.random() * 1 + 0.5 : (Math.random() - 0.5) * 0.4,
+                    alpha: Math.random() * 0.7 + 0.3,
+                    length: config.bgTheme === 'pluie' ? Math.random() * 15 + 10 : 0
+                });
+            }
+            if (config.bgTheme === 'matrice') {
+                let columns = Math.floor(window.innerWidth / 20);
+                for (let i = 0; i < columns; i++) {
+                    matrixDrops.push({ x: i * 20, y: Math.random() * window.innerHeight });
+                }
+            }
+        }
+
+        function changeBackgroundTheme(theme) {
+            config.bgTheme = theme;
+            document.getElementById("bg-theme-select").value = theme;
+            document.getElementById("ingame-bg-theme-select").value = theme;
+            initThemeElements();
+            saveConfig();
+        }
+
+        function drawActiveTheme(targetCtx, targetCanvas) {
+            targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+            if (config.bgTheme === 'matrice') {
+                targetCtx.fillStyle = 'rgba(0, 17, 0, 0.2)';
+                targetCtx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+                targetCtx.fillStyle = '#00ff66';
+                targetCtx.font = '15px monospace';
+                matrixDrops.forEach(drop => {
+                    let char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
+                    targetCtx.fillText(char, drop.x, drop.y);
+                    drop.y += 20;
+                    if (drop.y > targetCanvas.height) drop.y = 0;
+                });
+                return;
+            }
+
+            let bgGrad = targetCtx.createRadialGradient(targetCanvas.width / 2, targetCanvas.height / 2, 50, targetCanvas.width / 2, targetCanvas.height / 2, targetCanvas.width * 0.8);
+            if (config.bgTheme === 'retro') {
+                bgGrad.addColorStop(0, '#3b0764'); bgGrad.addColorStop(1, '#030712');
+            } else if (config.bgTheme === 'feu') {
+                bgGrad.addColorStop(0, '#450a0a'); bgGrad.addColorStop(1, '#030712');
+            } else if (config.bgTheme === 'cyberpunk') {
+                bgGrad.addColorStop(0, '#701a75'); bgGrad.addColorStop(1, '#030712');
+            } else if (config.bgTheme === 'zen') {
+                bgGrad.addColorStop(0, '#064e3b'); bgGrad.addColorStop(1, '#030712');
+            } else if (config.bgTheme === 'ocean') {
+                bgGrad.addColorStop(0, '#082f49'); bgGrad.addColorStop(1, '#030712');
+            } else {
+                bgGrad.addColorStop(0, 'rgba(0, 150, 255, 0.15)'); bgGrad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+            }
+            targetCtx.fillStyle = bgGrad; targetCtx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+            particles.forEach(p => {
+                p.x += p.speedX; p.y += p.speedY;
+                if (p.x < 0) p.x = targetCanvas.width; if (p.x > targetCanvas.width) p.x = 0;
+                if (p.y < 0) p.y = targetCanvas.height; if (p.y > targetCanvas.height) p.y = 0;
+
+                targetCtx.beginPath();
+                if (config.bgTheme === 'pluie') {
+                    targetCtx.strokeStyle = `rgba(56, 189, 248, ${p.alpha})`;
+                    targetCtx.lineWidth = 1.5;
+                    targetCtx.moveTo(p.x, p.y);
+                    targetCtx.lineTo(p.x, p.y + p.length);
+                    targetCtx.stroke();
+                } else {
+                    targetCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    let color = '56, 189, 248';
+                    if (config.bgTheme === 'feu') color = '239, 68, 68';
+                    else if (config.bgTheme === 'neige') color = '255, 255, 255';
+                    else if (config.bgTheme === 'particules') color = '234, 179, 8';
+                    else if (config.bgTheme === 'cyberpunk') color = '236, 72, 153';
+                    else if (config.bgTheme === 'zen') color = '74, 222, 128';
+                    targetCtx.fillStyle = `rgba(${color}, ${p.alpha})`;
+                    targetCtx.fill();
+                }
+            });
+        }
+
+        function animateLoop() {
+            drawActiveTheme(ctx, canvas);
+            if (document.getElementById("game-overlay").style.display === "flex") {
+                drawActiveTheme(overlayCtx, overlayCanvas);
+            }
+            requestAnimationFrame(animateLoop);
+        }
+
+        resizeCanvas();
+        animateLoop();
+
+        function saveConfig() {
+            localStorage.setItem("retro_config_v6", JSON.stringify({ lang: config.lang, volume: config.volume, brightness: config.brightness, bgTheme: config.bgTheme }));
+            localStorage.setItem("retro_favorites_v6", JSON.stringify(config.favorites));
+        }
+
+        function getTxt(key) { return TRANSLATIONS[config.lang][key] || TRANSLATIONS["English"][key]; }
+
+        function detectVisualType(filename) {
+            let name = filename.toLowerCase();
+            if (name.includes("mario") || name.includes("platform") || name.includes("sonic") || name.includes("jump")) return "Platform";
+            if (name.includes("pacman") || name.includes("arcade") || name.includes("space") || name.includes("invader") || name.includes("asteroids")) return "Arcade";
+            if (name.includes("tetris") || name.includes("puzzle") || name.includes("snake") || name.includes("card") || name.includes("chess")) return "Puzzle";
+            if (name.includes("race") || name.includes("kart") || name.includes("drive") || name.includes("speed")) return "Racing";
+            if (name.includes("rpg") || name.includes("quest") || name.includes("zelda") || name.includes("adventure")) return "Adventure";
+            if (name.includes("fight") || name.includes("street") || name.includes("action") || name.includes("combat")) return "Action";
+            return "HTML5";
+        }
+
+        function renderGameRow(gameTitle, gamePath, gameType) {
+            let row = document.createElement("div"); row.className = "game-row";
+            
+            let badge = document.createElement("span");
+            badge.className = "game-type-badge";
+            badge.innerText = gameType || detectVisualType(gameTitle);
+            
+            let btnGame = document.createElement("button"); 
+            btnGame.className = "game-btn"; 
+            btnGame.innerText = gameTitle; 
+            btnGame.onclick = () => launchGame(gameTitle, gamePath);
+            
+            let isFav = config.favorites.includes(gameTitle);
+            let btnStar = document.createElement("button"); 
+            btnStar.className = "star-btn" + (isFav ? " active" : ""); 
+            btnStar.innerText = "★"; 
+            btnStar.onclick = () => toggleFavorite(gameTitle);
+
+            row.appendChild(badge);
+            row.appendChild(btnGame); 
+            row.appendChild(btnStar); 
+            return row;
+        }
+
+        async function fetchAssetsGames() {
+            const container = document.getElementById("games-container");
+            container.innerHTML = "";
+
+            try {
+                const response = await fetch('./assets/games.json');
+                if (response.ok) {
+                    const gamesList = await response.json();
+                    gamesList.forEach(game => {
+                        container.appendChild(renderGameRow(game.title, game.path, game.type));
+                    });
+                }
+            } catch (err) {
+                console.log("Assets loading:", err);
+            }
+        }
+
+        function showMainMenu() {
+            document.getElementById("welcome-title").innerText = getTxt("welcome");
+            document.getElementById("welcome-sub").innerText = getTxt("welcome_sub");
+            document.getElementById("welcome-desc").innerText = getTxt("welcome_desc");
+
+            document.getElementById("btn-fav").innerText = getTxt("fav");
+            document.getElementById("btn-music-menu").innerText = getTxt("music_btn");
+            document.getElementById("btn-set").innerText = getTxt("set");
+            document.getElementById("btn-search").innerText = getTxt("search");
+            document.getElementById("btn-about").innerText = getTxt("about");
+            document.getElementById("btn-quit").innerText = getTxt("quit");
+            document.getElementById("btn-stop-game").innerText = getTxt("stop_btn");
+            document.getElementById("btn-ingame-set").innerText = getTxt("ingame_set");
+
+            document.getElementById("instructions-text").innerHTML = getTxt("instructions");
+
+            document.getElementById("music-modal-title").innerText = getTxt("music_title");
+            document.getElementById("lbl-choose-action").innerText = getTxt("choose_action");
+            document.getElementById("opt-menu").innerText = getTxt("opt_menu");
+            document.getElementById("opt-listen").innerText = getTxt("opt_listen");
+            document.getElementById("lbl-import-menu").innerText = getTxt("import_menu");
+            document.getElementById("lbl-import-listen").innerText = getTxt("import_listen");
+            document.getElementById("lbl-import-mp4").innerText = getTxt("import_mp4");
+
+            document.getElementById("search-modal-title").innerText = getTxt("search_title");
+            document.getElementById("search-label-input").innerText = getTxt("search_label");
+            document.getElementById("search-input").placeholder = getTxt("search_placeholder");
+            document.getElementById("search-execute-btn").innerText = getTxt("search_btn");
+
+            const themeKeys = ['espace', 'matrice', 'pluie', 'neige', 'retro', 'particules', 'vagues', 'cyberpunk', 'feu', 'ocean', 'zen', 'plasma'];
+            themeKeys.forEach(tk => {
+                let labelText = getTxt("t_" + tk);
+                let opt1 = document.getElementById("theme-" + tk);
+                let opt2 = document.getElementById("ingame-theme-" + tk);
+                if (opt1) opt1.innerText = labelText;
+                if (opt2) opt2.innerText = labelText;
+            });
+
+            fetchAssetsGames();
+            populateSettings();
+        }
+
+        function switchMediaTab(tab) {
+            if (tab === 'mp3') {
+                document.getElementById('tab-mp3').classList.add('active');
+                document.getElementById('tab-mp4').classList.remove('active');
+                document.getElementById('section-mp3').style.display = 'block';
+                document.getElementById('section-mp4').style.display = 'none';
+            } else {
+                document.getElementById('tab-mp4').classList.add('active');
+                document.getElementById('tab-mp3').classList.remove('active');
+                document.getElementById('section-mp4').style.display = 'block';
+                document.getElementById('section-mp3').style.display = 'none';
+            }
+        }
+
+        function toggleAudioInputs(mode) {
+            if (mode === 'menu') {
+                document.getElementById('menu-audio-section').style.display = 'block';
+                document.getElementById('listen-audio-section').style.display = 'none';
+            } else {
+                document.getElementById('menu-audio-section').style.display = 'none';
+                document.getElementById('listen-audio-section').style.display = 'block';
+            }
+        }
+
+        function loadMenuAudio(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                let fileUrl = URL.createObjectURL(file);
+                config.menuAudioLocked = fileUrl;
+                localStorage.setItem("retro_menu_audio_locked", fileUrl);
+
+                bgMusic.src = fileUrl;
+                bgMusic.loop = true;
+                bgMusic.volume = config.volume / 100;
+                bgMusic.play().catch(e => console.log("Error playing menu audio:", e));
+                closeModal('music-modal');
+            }
+        }
+
+        function launchMp3PlayerOverlay(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                let fileUrl = URL.createObjectURL(file);
+                closeModal('music-modal');
+
+                if (!bgMusic.paused) bgMusic.pause();
+
+                document.getElementById("active-game-iframe").style.display = "none";
+                document.getElementById("mp4-player-ui").style.display = "none";
+                document.getElementById("mp3-player-ui").style.display = "flex";
+
+                document.getElementById("overlay-game-title").innerText = file.name;
+                
+                actionAudio.src = fileUrl;
+                actionAudio.volume = config.volume / 100;
+                actionAudio.play();
+
+                actionAudio.ontimeupdate = () => {
+                    let current = actionAudio.currentTime;
+                    let duration = actionAudio.duration || 0;
+                    let percent = duration ? (current / duration) * 100 : 0;
+                    document.getElementById("mp3-progress-fill").style.width = percent + "%";
+                    document.getElementById("mp3-time-display").innerText = formatTime(current) + " / " + formatTime(duration);
+                };
+
+                document.getElementById("game-overlay").style.display = "flex";
+            }
+        }
+
+        function launchMp4PlayerOverlay(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                let fileUrl = URL.createObjectURL(file);
+                closeModal('music-modal');
+
+                if (!bgMusic.paused) bgMusic.pause();
+
+                document.getElementById("active-game-iframe").style.display = "none";
+                document.getElementById("mp3-player-ui").style.display = "none";
+                document.getElementById("mp4-player-ui").style.display = "flex";
+
+                document.getElementById("overlay-game-title").innerText = file.name;
+
+                let videoEl = document.getElementById("overlay-video");
+                videoEl.src = fileUrl;
+                videoEl.volume = config.volume / 100;
+                videoEl.play();
+
+                document.getElementById("game-overlay").style.display = "flex";
+            }
+        }
+
+        function formatTime(seconds) {
+            let m = Math.floor(seconds / 60);
+            let s = Math.floor(seconds % 60);
+            return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        }
+
+        function seekAudio(event) {
+            let container = document.getElementById("mp3-progress-container");
+            let rect = container.getBoundingClientRect();
+            let clickX = event.clientX - rect.left;
+            let width = rect.width;
+            if (actionAudio.duration) {
+                actionAudio.currentTime = (clickX / width) * actionAudio.duration;
+            }
+        }
+
+        function launchGame(gameTitle, gamePath) {
+            document.getElementById("mp3-player-ui").style.display = "none";
+            document.getElementById("mp4-player-ui").style.display = "none";
+            document.getElementById("active-game-iframe").style.display = "block";
+
+            openGameOverlay(gameTitle, gamePath);
+        }
+
+        function openSearchModal() {
+            document.getElementById("search-modal").style.display = "block";
+            document.getElementById("search-input").focus();
+        }
+
+        function executeSearch() {
+            let query = document.getElementById("search-input").value.trim();
+            if (!query) return;
+            closeModal('search-modal');
+            let searchUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(query);
+            window.open(searchUrl, '_blank');
+        }
+
+        function openGameOverlay(gameName, gameUrl) {
+            document.getElementById("overlay-game-title").innerText = gameName;
+            document.getElementById("active-game-iframe").src = gameUrl;
+            document.getElementById("game-overlay").style.display = "flex";
+        }
+
+        function stopCurrentGame() {
+            document.getElementById("active-game-iframe").src = "about:blank";
+            actionAudio.pause();
+            actionAudio.currentTime = 0;
+            let videoEl = document.getElementById("overlay-video");
+            videoEl.pause();
+            videoEl.src = "";
+
+            document.getElementById("game-overlay").style.display = "none";
+            if (config.menuAudioLocked && bgMusic.paused) {
+                bgMusic.play().catch(e => console.log("Resume background failed:", e));
+            }
+        }
+
+        function toggleFavorite(game) {
+            let index = config.favorites.indexOf(game);
+            if (index > -1) { config.favorites.splice(index, 1); } else { config.favorites.push(game); }
+            saveConfig(); showMainMenu(); updateFavoritesModal();
+        }
+
+        function openModal(modalId) { document.getElementById(modalId).style.display = "block"; if (modalId === 'favorites-modal') updateFavoritesModal(); }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
+
+        function updateFavoritesModal() {
+            document.getElementById("fav-modal-title").innerText = getTxt("fav");
+            let listContainer = document.getElementById("favorites-list"); listContainer.innerHTML = "";
+            config.favorites.forEach(fav => {
+                let btn = document.createElement("button"); btn.className = "game-btn"; btn.style.display = "block"; btn.style.margin = "5px 0"; btn.innerText = fav;
+                btn.onclick = () => { closeModal('favorites-modal'); launchGame(fav, fav); };
+                listContainer.appendChild(btn);
+            });
+        }
+
+        function populateSettings() {
+            document.getElementById("set-modal-title").innerText = getTxt("set");
+            document.getElementById("lbl-bg-theme").innerText = getTxt("theme_label");
+            document.getElementById("lbl-volume").innerText = getTxt("vol_label");
+            document.getElementById("lbl-brightness").innerText = getTxt("bright_label");
+            document.getElementById("lbl-language").innerText = getTxt("lang_label");
+
+            document.getElementById("ingame-set-title").innerText = getTxt("set");
+            document.getElementById("lbl-ingame-bg-theme").innerText = getTxt("theme_label");
+            document.getElementById("lbl-ingame-volume").innerText = getTxt("vol_label");
+            document.getElementById("lbl-ingame-brightness").innerText = getTxt("bright_label");
+            document.getElementById("lbl-ingame-language").innerText = getTxt("lang_label");
+
+            document.getElementById("about-modal-title").innerText = getTxt("about");
+            document.getElementById("creator-text").innerHTML = getTxt("creator") + "<br>Version: v1.1.6";
+
+            let select = document.getElementById("language-select"); select.innerHTML = "";
+            let ingameSelect = document.getElementById("ingame-language-select"); ingameSelect.innerHTML = "";
+
+            for (let [key, data] of Object.entries(TRANSLATIONS)) {
+                let opt = document.createElement("option"); 
+                opt.value = key; 
+                opt.innerText = data.lang_display;
+                if (key === config.lang) opt.selected = true; 
+                select.appendChild(opt);
+                
+                let optIngame = opt.cloneNode(true); 
+                if (key === config.lang) optIngame.selected = true;
+                ingameSelect.appendChild(optIngame);
+            }
+        }
+
+        function changeLanguage(lang) { 
+            config.lang = lang; 
+            saveConfig(); 
+            showMainMenu(); 
+        }
+        
+        function updateVolume(val) { 
+            config.volume = val; 
+            bgMusic.volume = val / 100;
+            actionAudio.volume = val / 100;
+            document.getElementById("overlay-video").volume = val / 100;
+            document.getElementById("volume-range").value = val; 
+            document.getElementById("ingame-volume-range").value = val; 
+            saveConfig(); 
+        }
+
+        function updateBrightness(val) { 
+            config.brightness = val; 
+            document.getElementById("main-app").style.filter = `brightness(${val}%)`; 
+            document.getElementById("brightness-range").value = val; 
+            document.getElementById("ingame-brightness-range").value = val; 
+            saveConfig(); 
+        }
+
+        function quitApp() {
+            if (confirm(getTxt("confirm_quit"))) {
+                try { window.close(); } catch(e) {}
+                setTimeout(() => { document.body.innerHTML = `<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#000;color:#fff;font-family:Arial;font-size:24px;'>${getTxt("app_closed_msg")}</div>`; }, 100);
+            }
+        }
+
+        window.onload = () => {
+            updateBrightness(config.brightness);
+            document.getElementById("brightness-range").value = config.brightness;
+            document.getElementById("volume-range").value = config.volume;
+            document.getElementById("ingame-brightness-range").value = config.brightness;
+            document.getElementById("ingame-volume-range").value = config.volume;
+            document.getElementById("bg-theme-select").value = config.bgTheme;
+            document.getElementById("ingame-bg-theme-select").value = config.bgTheme;
+            bgMusic.volume = config.volume / 100;
+            showMainMenu();
+        };
+    </script>
+</body>
+</html>
