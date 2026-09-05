@@ -1,1 +1,57 @@
-
+[
+  {
+    "title": "Chess AI",
+    "path": "assets/games/Chess AI.html",
+    "type": "Puzzle"
+  },
+  {
+    "title": "Crossy Frog",
+    "path": "assets/games/Crossy Frog.html",
+    "type": "Arcade"
+  },
+  {
+    "title": "Cuisine",
+    "path": "assets/games/Cuisine - Pro 1.1.2 A co....html",
+    "type": "Simulation"
+  },
+  {
+    "title": "Double Dragon II",
+    "path": "assets/games/Double dragon II.html",
+    "type": "Action"
+  },
+  {
+    "title": "Minecraft V8",
+    "path": "assets/games/Minecraft V8.html",
+    "type": "Aventure"
+  },
+  {
+    "title": "PAC-MAN",
+    "path": "assets/games/PAC-MAN.html",
+    "type": "Arcade"
+  },
+  {
+    "title": "RETRO PONG",
+    "path": "assets/games/RETRO PONG.html",
+    "type": "Arcade"
+  },
+  {
+    "title": "Retro Rider 3D",
+    "path": "assets/games/Retro Rider 3D.html",
+    "type": "Course"
+  },
+  {
+    "title": "Risk - World War III",
+    "path": "assets/games/Risk - World War III.html",
+    "type": "Stratégie"
+  },
+  {
+    "title": "Snake",
+    "path": "assets/games/Snake.html",
+    "type": "Arcade"
+  },
+  {
+    "title": "Solitaire",
+    "path": "assets/games/Solitaire (mobile friendl....html",
+    "type": "Cartes"
+  }
+]
