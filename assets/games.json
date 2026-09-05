@@ -1,57 +1,68 @@
 [
   {
+    "id": "chess",
     "title": "Chess AI",
-    "path": "assets/games/Chess AI.html",
-    "type": "Puzzle"
+    "type": "HTML",
+    "path": "./Chess AI.html"
   },
   {
+    "id": "crossy",
     "title": "Crossy Frog",
-    "path": "assets/games/Crossy Frog.html",
-    "type": "Arcade"
+    "type": "HTML",
+    "path": "./Crossy Frog.html"
   },
   {
-    "title": "Cuisine",
-    "path": "assets/games/Cuisine - Pro 1.1.2 A co....html",
-    "type": "Simulation"
+    "id": "cuisine",
+    "title": "Cuisine - Pro 1.1.2",
+    "type": "HTML",
+    "path": "./Cuisine - Pro 1.1.2 A cooking simulator.html"
   },
   {
+    "id": "doubledragon",
     "title": "Double Dragon II",
-    "path": "assets/games/Double dragon II.html",
-    "type": "Action"
+    "type": "HTML",
+    "path": "./Double dragon II.html"
   },
   {
+    "id": "minecraft",
     "title": "Minecraft V8",
-    "path": "assets/games/Minecraft V8.html",
-    "type": "Aventure"
+    "type": "HTML",
+    "path": "./Minecraft V8.html"
   },
   {
+    "id": "pacman",
     "title": "PAC-MAN",
-    "path": "assets/games/PAC-MAN.html",
-    "type": "Arcade"
+    "type": "HTML",
+    "path": "./PAC-MAN.html"
   },
   {
-    "title": "RETRO PONG",
-    "path": "assets/games/RETRO PONG.html",
-    "type": "Arcade"
+    "id": "pong",
+    "title": "Retro Pong",
+    "type": "HTML",
+    "path": "./RETRO PONG.html"
   },
   {
+    "id": "retrorider",
     "title": "Retro Rider 3D",
-    "path": "assets/games/Retro Rider 3D.html",
-    "type": "Course"
+    "type": "HTML",
+    "path": "./Retro Rider 3D.html"
   },
   {
+    "id": "risk",
     "title": "Risk - World War III",
-    "path": "assets/games/Risk - World War III.html",
-    "type": "Stratégie"
+    "type": "HTML",
+    "path": "./Risk - World War III.html"
   },
   {
+    "id": "snake",
     "title": "Snake",
-    "path": "assets/games/Snake.html",
-    "type": "Arcade"
+    "type": "HTML",
+    "path": "./Snake.html"
   },
   {
+    "id": "solitaire",
     "title": "Solitaire",
-    "path": "assets/games/Solitaire (mobile friendl....html",
-    "type": "Cartes"
+    "type": "HTML",
+    "path": "./Solitaire (mobile friendly).html"
   }
 ]
